@@ -1,0 +1,26 @@
+#!/bin/python3
+
+import sys
+from os import walk
+from pylint import lint
+
+files = []
+
+for (dirpath, dirnames, filenames) in walk('./'):
+    for filename in filenames:
+        parts = filename.split('.')
+        if (parts[-1] == 'py'):
+            files.append(dirpath + '/' + filename)
+
+THRESHOLD = 9
+score = 10
+
+if len(files) > 0:
+    run = lint.Run(files, do_exit=False)
+    score = run.linter.stats['global_note']
+
+if score < THRESHOLD:
+    print('commit is rejected')
+    sys.exit(1)
+
+print('verification passed')
